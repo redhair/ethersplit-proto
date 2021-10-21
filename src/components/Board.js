@@ -5,7 +5,7 @@ import { Card } from './Card';
 import { ItemTypes } from './ItemTypes';
 
 import update from 'immutability-helper';
-export const Board = memo(function Board() {
+export const Board = memo(function Board({ opponent }) {
   const [cardSlots, setCardSlots] = useState([
     { accepts: [ItemTypes.CHAR], lastDroppedItem: null },
     { accepts: [ItemTypes.CHAR], lastDroppedItem: null },
@@ -53,7 +53,7 @@ export const Board = memo(function Board() {
 
   return (
     <div>
-      <div className="grid grid-cols-6 gap-4 mx-64 my-12">
+      <div className="grid grid-cols-6 gap-4 mx-6 my-12">
         {cardSlots.map(({ accepts, lastDroppedItem }, index) => (
           <CardSlot
             accept={accepts}
@@ -62,11 +62,11 @@ export const Board = memo(function Board() {
             key={index}
           />
         ))}
+
         {cards.map(({ name, type }, index) => (
           <Card name={name} type={type} isDropped={isDropped(name)} key={index} />
         ))}
       </div>
-      <p>Player Health: 100</p>
     </div>
   );
 });

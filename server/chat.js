@@ -1,19 +1,18 @@
 const uuidv4 = require('uuid').v4;
 
-const messages = new Set();
-const users = new Map();
-
-const defaultUser = {
-  id: 'anon',
-  name: 'Anonymous',
-};
-
 const messageExpirationTimeMS = 5 * 60 * 1000;
 
 class Connection {
   constructor(io, socket) {
     this.socket = socket;
     this.io = io;
+    this.messages = new Set();
+    this.users = new Map();
+    this.defaultUser = {
+      id: 'anon',
+      name: 'Anonymous',
+      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+    };
 
     socket.on('getMessages', () => this.getMessages());
     socket.on('message', (value) => this.handleMessage(value));
@@ -28,28 +27,28 @@ class Connection {
   }
 
   getMessages() {
-    messages.forEach((message) => this.sendMessage(message));
+    this.messages.forEach((message) => this.sendMessage(message));
   }
 
   handleMessage(value) {
     const message = {
       id: uuidv4(),
-      user: users.get(this.socket) || defaultUser,
+      user: this.users.get(this.socket) || this.defaultUser,
       value,
       time: Date.now(),
     };
 
-    messages.add(message);
+    this.messages.add(message);
     this.sendMessage(message);
 
     setTimeout(() => {
-      messages.delete(message);
+      this.messages.delete(message);
       this.io.sockets.emit('deleteMessage', message.id);
     }, messageExpirationTimeMS);
   }
 
   disconnect() {
-    users.delete(this.socket);
+    this.users.delete(this.socket);
   }
 }
 
