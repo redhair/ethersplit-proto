@@ -7,9 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
-// var chat = require('../chat');
 var gameSocket = require('../gameSocket');
 var socketio = require('socket.io');
+const chat = require('../chat');
 /**
  * Get port from environment and store in Express.
  */

@@ -37,23 +37,28 @@ export default function Messages({ socket }) {
   }, [socket]);
 
   return (
-    <div className="message-list overflow-y-scroll w-96 max-h-96 h-96">
-      {[...Object.values(messages)]
-        .sort((a, b) => a.time - b.time)
-        .map((message) => (
-          <div
-            key={message.id}
-            className="message-container"
-            title={`Sent at ${new Date(message.time).toLocaleTimeString()}`}
-          >
-            <span className="pr-2 text-xs text-gray-500">{new Date(message.time).toLocaleTimeString()}</span>
-            <span style={{ color: message.user.color }} className="font-bold">
-              {message.user.name}:
-            </span>
-            <span className="">{message.value}</span>
-          </div>
-        ))}
+    <>
+      <div className="message-list h-full	overflow-y-scroll">
+        {[...Object.values(messages)]
+          .sort((a, b) => a.time - b.time)
+          .map((message) => {
+            if (!message.user) return null;
+            return (
+              <div
+                key={message.id}
+                className="message-container text-white"
+                title={`Sent at ${new Date(message.time).toLocaleTimeString()}`}
+              >
+                <span className="pr-2 text-xs text-gray-500">{new Date(message.time).toLocaleTimeString()}</span>
+                <span style={{ color: message.user.color }} className="font-bold">
+                  {message.user.name}:&nbsp;
+                </span>
+                <span className="">{message.value}</span>
+              </div>
+            );
+          })}
+      </div>
       <div ref={messagesEndRef} />
-    </div>
+    </>
   );
 }

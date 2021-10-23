@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Board } from '../src/components/Board';
 import { OpponentBoard } from './components/OpponentBoard';
 import Chat from '../src/components/Chat';
+import Header from '../src/components/Header';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 import { useHistory, useParams } from 'react-router-dom';
@@ -57,51 +58,54 @@ function Game(props) {
   }, [socket]);
 
   return (
-    <div>
-      {challenge ? (
-        <>
-          <p>You've been challenged!</p>
-          <p>Select your deck</p>
-          <select
-            onChange={(e) => {
-              setDeck(e.target.value);
-            }}
-            value={deck}
-            className="px-4 py-4 bg-white border-gray-500 border text-gray-500 outline-none font-bold rounded-lg"
-          >
-            <option disabled value="">
-              Please select a deck
-            </option>
-            <option>Giant Rush</option>
-            <option>Halfling Swarm</option>
-            <option>Casters</option>
-          </select>
-          <div className="flex ">
-            <button
-              onClick={() => {
-                acceptChallenge();
+    <>
+      <Header />
+      <div className="bg-gray-800">
+        {challenge ? (
+          <>
+            <p>You've been challenged!</p>
+            <p>Select your deck</p>
+            <select
+              onChange={(e) => {
+                setDeck(e.target.value);
               }}
-              className="px-6 py-4 bg-blue-500 font-bold text-white m-2 rounded-lg"
+              value={deck}
+              className="px-4 py-4 bg-white border-gray-500 border text-gray-500 outline-none font-bold rounded-lg"
             >
-              Accept
-            </button>
-            <button className="px-6 py-4 bg-blue-500 font-bold text-white m-2 rounded-lg">Spectate</button>
+              <option disabled value="">
+                Please select a deck
+              </option>
+              <option>Giant Rush</option>
+              <option>Halfling Swarm</option>
+              <option>Casters</option>
+            </select>
+            <div className="flex ">
+              <button
+                onClick={() => {
+                  acceptChallenge();
+                }}
+                className="px-6 py-4 bg-blue-500 font-bold text-white m-2 rounded-lg"
+              >
+                Accept
+              </button>
+              <button className="px-6 py-4 bg-blue-500 font-bold text-white m-2 rounded-lg">Spectate</button>
+            </div>
+          </>
+        ) : game ? (
+          <>
+            <OpponentBoard gameState={boardState}></OpponentBoard>
+            <hr />
+            <Board gameState={boardState}></Board>
+            <Chat socket={socket} />
+          </>
+        ) : (
+          <div>
+            Game: {gameId}
+            <p>Waiting for opponent to accept...</p>
           </div>
-        </>
-      ) : game ? (
-        <>
-          <OpponentBoard gameState={boardState}></OpponentBoard>
-          <hr />
-          <Board gameState={boardState}></Board>
-          <Chat socket={socket} />
-        </>
-      ) : (
-        <div>
-          Game: {gameId}
-          <p>Waiting for opponent to accept...</p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 

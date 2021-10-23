@@ -11,7 +11,7 @@ const MessageInput = ({ socket }) => {
   return (
     <form className="border-2 rounded-lg border-gray-500 py-4 px-6 mt-4" onSubmit={submitForm}>
       <input
-        className="w-full outline-none"
+        className="w-full outline-none bg-gray-800 text-white"
         autoFocus
         value={value}
         placeholder="Type your message"
