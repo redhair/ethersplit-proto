@@ -86,28 +86,31 @@ function DeckBuilder(props) {
   }
 
   return (
-    <div className="">
+    <div className="bg-gray-800">
       <Header />
       <div className="flex flex-col mx-36">
-        <h1 className="font-black text-black text-4xl my-4">Deck Builder</h1>
+        <h1 className="font-black text-white text-4xl my-4">Deck Builder</h1>
         <form onSubmit={saveDeck} className="mb-12 ">
-          <label className="flex flex-col">
+          <label className="flex flex-col text-white">
             Deck Name:
             <input
               value={deckName}
-              className="border-2 my-2 border-blue-500 bg-gray-200 py-4 px-6 rounded-lg"
+              className="border-2 my-2 border-blue-500 bg-gray-200 text-black py-4 px-6 rounded-lg"
               placeholder="Enter deck name"
               onChange={(e) => setDeckName(e.target.value)}
               type="text"
             />
           </label>
-          <button className="py-4 px-6 bg-gray-800 text-white font-bold rounded-lg" type="submit">
+          <button
+            className="py-4 px-6 bg-gradient-to-t from-blue-600 to-blue-400 text-white font-bold rounded-lg"
+            type="submit"
+          >
             Save
           </button>
           {!!alert && <Alert alert={alert} />}
         </form>
         <div>
-          <h1 className="font-black text-black text-2xl my-4">My deck ({deck.length}/30)</h1>
+          <h1 className="font-black text-white text-2xl my-4">My deck ({deck.length}/30)</h1>
           <div className="flex flex-wrap">
             {deck.length > 0 ? (
               deck.map((c, i) => {
@@ -122,11 +125,11 @@ function DeckBuilder(props) {
                 );
               })
             ) : (
-              <p>Empty deck, click on a card below to add it</p>
+              <p className="text-white">Empty deck, click on a card below to add it</p>
             )}
           </div>
         </div>
-        <h1 className="font-black text-black text-2xl my-4">Characters</h1>
+        <h1 className="font-black text-white text-2xl my-4">Characters</h1>
         <div className="flex flex-wrap">
           {Object.keys(config.racialPassiveMap).map((r) => {
             const name = r;
@@ -141,7 +144,7 @@ function DeckBuilder(props) {
           })}
         </div>
 
-        <h1 className="font-black text-black text-2xl my-4">Melee Weapons</h1>
+        <h1 className="font-black text-white text-2xl my-4">Melee Weapons</h1>
         <div className="flex flex-wrap">
           {Object.keys(config.weaponGradeDmgMap.MELEE).map((w) => {
             const name = w + '_SWORD';
@@ -156,7 +159,7 @@ function DeckBuilder(props) {
           })}
         </div>
 
-        <h1 className="font-black text-black text-2xl my-4">Range Weapons</h1>
+        <h1 className="font-black text-white text-2xl my-4">Range Weapons</h1>
         <div className="flex flex-wrap">
           {Object.keys(config.weaponGradeDmgMap.RANGE).map((w) => {
             const name = w + '_BOW';
@@ -171,7 +174,7 @@ function DeckBuilder(props) {
           })}
         </div>
 
-        <h1 className="font-black text-black text-2xl my-4">Spells</h1>
+        <h1 className="font-black text-white text-2xl my-4">Spells</h1>
         <div className="flex flex-wrap">
           {Object.keys(config.spellEffectMap).map((s) => {
             const name = s;

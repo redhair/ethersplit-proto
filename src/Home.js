@@ -33,10 +33,10 @@ function Home(props) {
   return (
     <div>
       <Header />
-      <div className="grid grid-cols-3 gap-16 bg-gray-800">
-        <div className="col-span-1 ml-16 bg-gray-800 grid grid-rows-3 gap-4 justify-center items-center">
+      <div className="grid grid-cols-3 gap-16 bg-gray-800 px-16 pt-8">
+        <div className="col-span-1 bg-gray-800 flex flex-col w-full ">
           <div>
-            <div className="text-white border-2 border-color-white rounded-lg p-4">
+            <div className="text-white border-2 border-color-white rounded-lg p-4 mb-8">
               <h2 className="text-white font-black text-2xl">News</h2>
               <ul className="list-disc list-inside	">
                 <li>Deck builder is done and working</li>
@@ -46,23 +46,6 @@ function Home(props) {
             </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-white flex flex-col font-bold">
-              Deck:
-              <select
-                onChange={(e) => {
-                  setDeck(e.target.value);
-                }}
-                value={deck}
-                className="px-4 py-4 mb-4 bg-white border-gray-500 border text-gray-500 outline-none font-bold rounded-lg"
-              >
-                <option disabled value="">
-                  Please select a deck
-                </option>
-                {decks.map((d) => {
-                  return <option>{d.deckName}</option>;
-                })}
-              </select>
-            </label>
             <button
               className="px-6 py-4 bg-gradient-to-t from-blue-600 to-blue-400 text-xl text-white font-bold rounded-lg mb-4 "
               onClick={async () => {
@@ -76,8 +59,6 @@ function Home(props) {
             <button
               className="px-6 py-4 bg-gradient-to-t from-purple-600 to-purple-400 text-xl text-white font-bold rounded-lg mb-4"
               onClick={async () => {
-                const gameId = uuidv4();
-
                 history.push(`/deck-builder`);
               }}
             >
@@ -93,7 +74,7 @@ function Home(props) {
             </button>
           </div>
         </div>
-        <div className="bg-gray-800 col-span-2 mr-16 max-h-screen h-screen">
+        <div className="bg-gray-800 col-span-2 max-h-screen h-screen">
           <Chat socket={socket} />
         </div>
       </div>

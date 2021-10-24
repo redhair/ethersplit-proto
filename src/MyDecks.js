@@ -30,13 +30,13 @@ function MyDecks(props) {
   return (
     <>
       <Header />
-      <div className="m-8">
-        <h1 className="font-black text-black text-4xl">My Decks</h1>
-        <p className="my-4">Click any deck to edit or press delete to remove to delete</p>
+      <div className="p-8 bg-gray-800 h-screen">
+        <h1 className="font-black text-white text-4xl">My Decks</h1>
+        <p className="my-4 text-white">Click any deck to edit or press delete to remove to delete</p>
         <div className="grid grid-cols-2">
           {decks.map((d, i) => {
             return (
-              <div className="bg-gray-800 m-4 flex flex-col justify-between rounded-lg text-black font-bold p-8 my-4">
+              <div className="bg-gray-700 m-4 flex flex-col justify-between rounded-lg text-white font-bold p-8 my-4">
                 <div className="flex justify-between">
                   <h2 className="text-2xl text-white font-black mb-4">{d.deckName}</h2>
                   <h2 className="text-2xl text-white font-black mb-4">v{d.v}</h2>
@@ -44,13 +44,13 @@ function MyDecks(props) {
                 <div>
                   <button
                     onClick={() => history.push(`/deck-builder/${d.deckId}`)}
-                    className="bg-blue-500 text-gray-800 py-4 px-6 font-bold rounded-lg mr-4"
+                    className="bg-gradient-to-t from-blue-600 to-blue-400 text-white py-4 px-6 font-bold rounded-lg mr-4"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteDeck(i)}
-                    className="bg-red-400 text-gray-800 py-4 px-6 font-bold rounded-lg"
+                    className="bg-gradient-to-t from-red-600 to-red-400 text-white py-4 px-6 font-bold rounded-lg"
                   >
                     Delete
                   </button>

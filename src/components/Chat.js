@@ -10,7 +10,7 @@ function Chat({ socket }) {
   return (
     <>
       {socket ? (
-        <div className="flex flex-col h-full pb-28">
+        <div className="flex flex-col">
           <Messages socket={socket} />
           <MessageInput socket={socket} />
         </div>
