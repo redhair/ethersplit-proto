@@ -23,7 +23,7 @@ function Game(props) {
 
   function acceptChallenge() {
     console.log('in', { socket });
-    socket.emit('acceptChallenge', { player: { name: 'Anonymous', deck: deck.deck } });
+    socket.emit('acceptChallenge', { player: { name: 'Anonymous', deck: deck.deck, socketId: socket.id } });
   }
 
   function setCard(index, item) {
@@ -31,10 +31,10 @@ function Game(props) {
     //apply update to curernt board state
     console.log({ boardState });
     let temp = boardState;
-    temp[socket.id].cardSlots.splice(index, 1, item);
     console.log({ temp });
+    temp[socket.id].cardSlots.splice(index, 1, item);
     setBoardState({ ...temp });
-    socket.emit('changeBoardState', boardState);
+    socket.emit('changeBoardState', { boardState, socketId: socket.id });
   }
 
   useEffect(() => {
@@ -66,7 +66,7 @@ function Game(props) {
       setChallenge(false);
       setGame(true);
     };
-    const boardStateListener = (boardState) => {
+    const boardStateListener = ({ boardState }) => {
       console.log('board state listener', { boardState });
 
       setBoardState(boardState);
@@ -75,10 +75,15 @@ function Game(props) {
       console.log('game state listener', { msg });
       setGameState(msg);
     };
+    const boardErrorListener = (err) => {
+      console.log('board error listener', { err });
+      console.error({ err });
+    };
     socket.on('message', msgListener);
     socket.on('acceptChallenge', challengeListener);
     socket.on('changeBoardState', boardStateListener);
     socket.on('changeGameState', gameStateListener);
+    socket.on('boardError', boardErrorListener);
     // socket.emit('getMessages');
 
     return () => {
@@ -86,6 +91,7 @@ function Game(props) {
       socket.off('acceptChallenge', challengeListener);
       socket.off('changeBoardState', boardStateListener);
       socket.off('changeGameState', gameStateListener);
+      socket.off('boardError', boardErrorListener);
     };
   }, [socket]);
 
@@ -161,6 +167,7 @@ function Game(props) {
     console.log({ myCardSlots, opponentCardSlots });
     return (
       <div className="bg-gray-800">
+        <p>{socket.id}</p>
         <OpponentBoard cardState={opponentCardSlots}></OpponentBoard>
         <hr />
         <Board onSetCard={setCard} cardState={myCardSlots}></Board>
