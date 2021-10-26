@@ -18,11 +18,7 @@ export const CardSlot = memo(function CardSlot({ accept, lastDroppedItem, onDrop
     backgroundColor = 'bg-red-500';
   }
   return (
-    <div
-      className={'px-8 py-12 rounded-lg bg-white border border-gray-400 ' + backgroundColor}
-      ref={drop}
-      role="CardSlot"
-    >
+    <div className={'px-8 py-12 rounded-lg bg-white border border-gray-400 ' + backgroundColor} ref={drop}>
       {isActive ? 'Release to drop' : !lastDroppedItem && `Accepts: ${accept.join(', ')}`}
 
       {lastDroppedItem && <p>{JSON.stringify(lastDroppedItem)}</p>}

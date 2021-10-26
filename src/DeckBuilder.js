@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+// import PropTypes from 'prop-types';
+// import { Link } from 'react-router-dom';
 import Alert from './components/Alert';
 import Header from './components/Header';
 import config from './game/config';
@@ -27,7 +27,7 @@ function DeckBuilder(props) {
       setDeck(found.deck);
       setDeckName(found.deckName);
     }
-  }, []);
+  }, [params.deckId]);
 
   function saveDeck(e) {
     //save deck in cookies

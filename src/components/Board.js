@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, memo } from 'react';
-import { NativeTypes } from 'react-dnd-html5-backend';
+import { useState, useCallback, memo } from 'react';
+// import { NativeTypes } from 'react-dnd-html5-backend';
 import { CardSlot } from './CardSlot';
 import { Card } from './Card';
 import { ItemTypes } from './ItemTypes';
@@ -36,7 +36,9 @@ export const Board = memo(function Board({ cardState, onSetCard }) {
   }
   const handleDrop = useCallback(
     (index, item) => {
+      console.log({ item });
       const { name } = item;
+      // prevent placing a card on top of an existing card (remove this for weapon upgrades)
       if (cardSlots[index].lastDroppedItem) return;
       setDroppedCardNames(update(droppedCardNames, name ? { $push: [name] } : { $push: [] }));
       setCardSlots(

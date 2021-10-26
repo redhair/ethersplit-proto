@@ -23,15 +23,16 @@ export class Game {
     };
     this.id = id;
     this._activePlayer = null;
+    this._matchState = null;
+    this._gameState = null;
     this.getTurn = this.getTurn.bind(this);
     this.nextTurn = this.nextTurn.bind(this);
-    // this.setActivePlayer = this.setActivePlayer.bind(this);
-    // this.getActivePlayer = this.getActivePlayer.bind(this);
     this.setGameOver = this.setGameOver.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
     this.getId = this.getId.bind(this);
     this.setBoardState = this.setBoardState.bind(this);
-    this.getBoardState = this.getBoardState.bind(this);
+    // this.setMatchState = this.setMatchState.bind(this);
+    this.setGameState = this.setGameState.bind(this);
     this.getPlayers = this.getPlayers.bind(this);
     this.getBoardStateChangeType = this.getBoardStateChangeType.bind(this);
 
@@ -45,18 +46,42 @@ export class Game {
 
     sockets.forEach((socket) => {
       console.log('Init handlers for: ', socket.id);
-      socket.on('acceptChallenge', (msg) => {
-        // console.log('in acceptChallenge', { msg });
-        this.acceptChallenge(msg.player);
-      });
+
+      // game controllers
+      socket.on('changeMatchState', this.setMatchState);
+      socket.on('changeGameState', this.setGameState);
       socket.on('changeBoardState', this.setBoardState);
+
+      // chat controllers
       socket.on('getMessages', () => this.getMessages());
       socket.on('message', (value) => this.handleMessage(value));
+
+      // misc
       socket.on('disconnect', () => this.disconnect());
       socket.on('connect_error', (err) => {
         console.log(`connect_error due to ${err.message}`);
       });
     });
+  }
+
+  setMatchState(matchState) {
+    this._matchState = matchState;
+    return this.io.sockets.emit('changeMatchState', matchState);
+  }
+
+  setGameState({ action, value }) {
+    switch (action) {
+      case 'ACCEPT_CHALLENGE':
+        this.acceptChallenge(value.player);
+        return;
+      case 'CHANGE_TURN':
+        this.activePlayer = value;
+        return;
+      case 'GAME_OVER':
+        return this.setGameOver();
+      default:
+        return null;
+    }
   }
 
   get activePlayer() {
@@ -77,6 +102,18 @@ export class Game {
      * in order to determine if an attack was made,
      * we need to be looking for a DIFF between the HP
      * of the CharacterCards on the oldBoardState and the newBoardState
+     *
+     * This means that we need to place CharacterCard classes within
+     * the cardSlots (first 6). The second 6 will be weapon slots.
+     * We will need to verify that the weapon dmg equipped is equal
+     * to the damage diff as well to prevent client tampering.
+     *
+     * This means that the "deck" object on the client side should instantiate
+     * the character class and weapon/spell class based on which card is selected.
+     * This will give us the ability to apply racial passives and weapon/spell dmg mods
+     * correctly. Once this calculation gets sent to the server, we have to verify it.
+     *
+     * If the verification checks out, we can broadcast the updated board state.
      */
 
     console.log({ cardSlotDiff, handDiff });
@@ -122,7 +159,7 @@ export class Game {
 
   acceptChallenge(player) {
     // console.log('ACCEPTED', { player });
-    // add 2nd player and start gmae
+    // add 2nd player and start game
     this.addPlayer(player);
     // console.log('DEBUG:', this.getPlayers().length);
     if (this.getPlayers().length === 2) {
@@ -141,7 +178,8 @@ export class Game {
       console.log('init board state');
       console.log('1 active player: ', this.activePlayer);
       this.boardState = boardState;
-      //broadcast update to sockets
+
+      // start the match and initialize the board
       this.io.sockets.emit('changeBoardState', { boardState, server: true });
       return;
     }
@@ -205,10 +243,10 @@ export class Game {
   }
 
   start() {
-    this.activePlayer = this.players[0];
     this.setBoardState({ boardState: this.boardState, socketId: 'init' });
     console.log('Board State:', this.getBoardState());
-    this.io.sockets.emit('changeGameState', 'playing');
+    this.io.sockets.emit('changeMatchState', 'playing');
+    this.io.sockets.emit('changeGameState', { action: 'CHANGE_TURN', value: this.players[0] });
     if (this.players.length < 2) return;
 
     //shuffle decks at start

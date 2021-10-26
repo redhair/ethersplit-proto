@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import io from 'socket.io-client';
+import React from 'react';
+// import PropTypes from 'prop-types';
+// import io from 'socket.io-client';
 import Messages from './Messages';
 import MessageInput from './MessageInput';
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useHistory, Link } from 'react-router-dom';
+// import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import Header from './components/Header';
 
 MyDecks.propTypes = {};

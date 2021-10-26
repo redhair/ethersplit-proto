@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Board } from '../src/components/Board';
 import { OpponentBoard } from './components/OpponentBoard';
-import Chat from '../src/components/Chat';
+// import Chat from '../src/components/Chat';
 import Header from '../src/components/Header';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -12,10 +12,9 @@ Game.propTypes = {};
 function Game(props) {
   const { gameId } = useParams();
   const [player, setPlayer] = useState();
-  const [challenge, setChallenge] = useState();
-  const [gameState, setGameState] = useState('challenge');
+  const [matchState, setMatchState] = useState('challenge');
+  const [gameState, setGameState] = useState();
   const [boardState, setBoardState] = useState();
-  const [game, setGame] = useState();
   const [socket, setSocket] = useState(null);
   const location = useLocation();
   const [savedDecks, setSavedDecks] = useState();
@@ -23,7 +22,10 @@ function Game(props) {
 
   function acceptChallenge() {
     console.log('in', { socket });
-    socket.emit('acceptChallenge', { player: { name: 'Anonymous', deck: deck.deck, socketId: socket.id } });
+    socket.emit('changeGameState', {
+      action: 'ACCEPT_CHALLENGE',
+      value: { player: { name: 'Anonymous', deck: deck.deck, socketId: socket.id } },
+    });
   }
 
   function setCard(index, item) {
@@ -44,63 +46,66 @@ function Game(props) {
   }, []);
 
   useEffect(() => {
-    if (challenge) return;
+    console.log({ matchState });
+    // if (matchState === 'challenge') return;
 
     const newSocket = io(`http://${window.location.hostname}:3000`, {
-      query: { gameId, player: JSON.stringify(player) },
+      query: { gameId },
     });
-    setSocket(newSocket);
+    console.log('SETTING SOCKET: ', newSocket);
+    newSocket.on('connect', (socket) => {
+      console.log('connected:', socket);
+      setSocket(newSocket);
+    });
     return () => newSocket.close();
-  }, [setSocket, gameId, challenge, player]);
+  }, [setSocket, gameId, matchState, player]);
 
   useEffect(() => {
     if (!socket) return;
+    console.log('Init Browser Handlers for: ', socket.id);
     const msgListener = (message) => {
       console.log('msg listener', message);
-      if (message === 'challenge') {
-        setChallenge(true);
-      }
     };
-    const challengeListener = () => {
-      console.log('challenge listener');
-      setChallenge(false);
-      setGame(true);
+    const matchStateListener = (msg) => {
+      console.log('match state listener', { msg });
+      setMatchState(msg);
+    };
+    const gameStateListener = ({ action, value }) => {
+      console.log('game state listener', { action, value });
+      setGameState({ action, value });
     };
     const boardStateListener = ({ boardState }) => {
       console.log('board state listener', { boardState });
-
       setBoardState(boardState);
-    };
-    const gameStateListener = (msg) => {
-      console.log('game state listener', { msg });
-      setGameState(msg);
     };
     const boardErrorListener = (err) => {
       console.log('board error listener', { err });
       console.error({ err });
     };
+    const connectListener = (socket) => {
+      console.log('connect listener: ', socket.id);
+    };
+    socket.on('connection', connectListener);
     socket.on('message', msgListener);
-    socket.on('acceptChallenge', challengeListener);
     socket.on('changeBoardState', boardStateListener);
+    socket.on('changeMatchState', matchStateListener);
     socket.on('changeGameState', gameStateListener);
     socket.on('boardError', boardErrorListener);
     // socket.emit('getMessages');
 
     return () => {
       socket.off('message', msgListener);
-      socket.off('acceptChallenge', challengeListener);
       socket.off('changeBoardState', boardStateListener);
+      socket.off('changeMatchState', matchStateListener);
       socket.off('changeGameState', gameStateListener);
       socket.off('boardError', boardErrorListener);
     };
   }, [socket]);
 
-  function renderGameState() {
-    switch (gameState) {
+  function renderMatchState() {
+    switch (matchState) {
       case 'challenge':
         return <Challenge />;
-      case 'waiting':
-        return <Waiting />;
       case 'playing':
         return <Game />;
       default:
@@ -128,7 +133,7 @@ function Game(props) {
           </option>
           {!!savedDecks &&
             savedDecks.map((d) => {
-              return <option>{d.deckName}</option>;
+              return <option key={d.deckId}>{d.deckName}</option>;
             })}
         </select>
         <div className="flex ">
@@ -146,18 +151,11 @@ function Game(props) {
     );
   }
 
-  function Waiting() {
-    return (
-      <div className="bg-gray-800 text-white flex flex-col justify-center items-center">
-        Game: {gameId}
-        <p>Waiting for opponent to accept...</p>
-      </div>
-    );
-  }
-
   function Game() {
     const sockets = Object.keys(boardState);
     console.log({ sockets });
+    console.log({ boardState });
+    console.log('My Socket ID: ', socket);
     const myBoardState = boardState[sockets.find((s) => s === socket.id)];
     console.log({ myBoardState });
     const opponentBoardState = boardState[sockets.find((s) => s !== socket.id)];
@@ -179,7 +177,7 @@ function Game(props) {
   return (
     <>
       <Header />
-      {renderGameState()}
+      {renderMatchState()}
     </>
   );
 }

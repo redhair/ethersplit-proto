@@ -1,14 +1,14 @@
-import axios from 'axios';
-import react, { useState } from 'react';
-import { Board } from './components/Board';
-import Chat from './components/Chat';
-import logo from './logo.svg';
+// import axios from 'axios';
+// import react, { useState } from 'react';
+// import { Board } from './components/Board';
+// import Chat from './components/Chat';
+// import logo from './logo.svg';
 import Home from './Home';
 import Game from './Game';
 import DeckBuilder from './DeckBuilder';
 import MyDecks from './MyDecks';
 
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
 
 function App() {

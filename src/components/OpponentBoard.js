@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+// import { useState, useEffect, useCallback, memo } from 'react';
 import OpponentCardSlot from './OpponentCardSlot';
 
 export function OpponentBoard({ cardState }) {

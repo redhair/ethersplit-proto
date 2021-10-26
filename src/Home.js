@@ -1,7 +1,7 @@
-import axios from 'axios';
+// import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Chat from './components/Chat';
 import io from 'socket.io-client';
 const uuidv4 = require('uuid').v4;
@@ -9,8 +9,8 @@ const uuidv4 = require('uuid').v4;
 Home.propTypes = {};
 
 function Home(props) {
-  const [deck, setDeck] = useState('');
-  const [decks, setDecks] = useState([]);
+  // const [deck, setDeck] = useState('');
+  // const [decks, setDecks] = useState([]);
   const history = useHistory();
   const [socket, setSocket] = useState(null);
 
@@ -19,16 +19,6 @@ function Home(props) {
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
-
-  useEffect(() => {
-    rehydrateDecks();
-  }, []);
-
-  function rehydrateDecks() {
-    const savedDecks = JSON.parse(localStorage.getItem('decks')) || [];
-
-    setDecks(savedDecks);
-  }
 
   return (
     <div>
